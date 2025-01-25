@@ -9,7 +9,7 @@ npm i bare-heif
 ## Usage
 
 ```js
-const heif = require('bare-hare')
+const heif = require('bare-heif')
 
 const image = require('./my-image.heic', { with: { type: 'binary' } })
 
