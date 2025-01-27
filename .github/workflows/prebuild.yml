@@ -47,12 +47,12 @@ jobs:
             arch: x64
             tags: -simulator
             flags: --simulator
-          # - os: windows-2022
-          #   platform: win32
-          #   arch: x64
-          # - os: windows-2022
-          #   platform: win32
-          #   arch: arm64
+          - os: windows-2022
+            platform: win32
+            arch: x64
+          - os: windows-2022
+            platform: win32
+            arch: arm64
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.platform }}-${{ matrix.arch }}${{ matrix.tags }}
     steps:
@@ -66,6 +66,8 @@ jobs:
         if: ${{ matrix.platform == 'linux' || matrix.platform == 'android' }}
       - run: brew install meson nasm
         if: ${{ matrix.platform == 'darwin' || matrix.platform == 'ios' }}
+      - run: choco install meson nasm
+        if: ${{ matrix.platform == 'win32' }}
       - run: npm install -g bare-runtime bare-make
       - run: npm install
       - run: bare-make generate --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} ${{ matrix.flags }}
