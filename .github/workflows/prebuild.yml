@@ -58,8 +58,10 @@ jobs:
           node-version: lts/*
       - run: |
           sudo apt update
-          sudo apt install -y nasm
-        if: ${{ matrix.platform == 'linux' }}
+          sudo apt install -y meson nasm
+        if: ${{ matrix.platform == 'linux' || matrix.platform == 'android' }}
+      - run: brew install meson nasm
+        if: ${{ matrix.platform == 'darwin' || matrix.platform == 'ios' }}
       - run: npm install -g bare-runtime bare-make
       - run: npm install
       - run: bare-make generate --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} ${{ matrix.flags }}
