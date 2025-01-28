@@ -31,11 +31,11 @@ jobs:
           sudo apt update
           sudo apt install -y meson nasm
         if: ${{ matrix.platform == 'linux' }}
-      - run: brew install meson ninja nasm
+      - run: brew install meson nasm
         if: ${{ matrix.platform == 'darwin' }}
-      - run: choco install ninja nasm
-        if: ${{ matrix.platform == 'win32' }}
-      - run: python -m pip install meson
+      - run: |
+          choco install meson ninja nasm
+          refreshenv
         if: ${{ matrix.platform == 'win32' }}
       - run: npm install -g bare-runtime bare-make
       - run: npm install
