@@ -68,7 +68,8 @@ jobs:
         if: ${{ matrix.platform == 'darwin' || matrix.platform == 'ios' }}
       - run: |
           choco install meson ninja nasm
-          refreshenv
+          "C:\Program Files\NASM" | Out-File -FilePath "$env:GITHUB_PATH" -Append
+          "C:\Program Files\Meson" | Out-File -FilePath "$env:GITHUB_PATH" -Append
         if: ${{ matrix.platform == 'win32' }}
       - run: npm install -g bare-runtime bare-make
       - run: npm install
