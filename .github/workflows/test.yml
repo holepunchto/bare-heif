@@ -29,11 +29,11 @@ jobs:
           node-version: lts/*
       - run: |
           sudo apt update
-          sudo apt install -y meson nasm
+          sudo apt install -y meson ninja nasm
         if: ${{ matrix.platform == 'linux' }}
-      - run: brew install meson nasm
+      - run: brew install meson ninja nasm
         if: ${{ matrix.platform == 'darwin' }}
-      - run: choco install nasm
+      - run: choco install ninja nasm
         if: ${{ matrix.platform == 'win32' }}
       - run: python -m pip install meson
         if: ${{ matrix.platform == 'win32' }}
