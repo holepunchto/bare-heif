@@ -33,7 +33,9 @@ jobs:
         if: ${{ matrix.platform == 'linux' }}
       - run: brew install meson nasm
         if: ${{ matrix.platform == 'darwin' }}
-      - run: choco install meson nasm
+      - run: choco install nasm
+        if: ${{ matrix.platform == 'win32' }}
+      - run: python -m pip install meson
         if: ${{ matrix.platform == 'win32' }}
       - run: npm install -g bare-runtime bare-make
       - run: npm install
