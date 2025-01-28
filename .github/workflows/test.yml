@@ -29,7 +29,7 @@ jobs:
           node-version: lts/*
       - run: |
           sudo apt update
-          sudo apt install -y meson ninja nasm
+          sudo apt install -y meson nasm
         if: ${{ matrix.platform == 'linux' }}
       - run: brew install meson ninja nasm
         if: ${{ matrix.platform == 'darwin' }}
