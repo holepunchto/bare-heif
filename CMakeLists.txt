@@ -5,7 +5,12 @@ find_package(cmake-ports REQUIRED PATHS node_modules/cmake-ports)
 
 project(bare_heif C)
 
-find_port(libheif)
+find_port(
+  libheif
+  FEATURES
+    dav1d
+    de265
+)
 
 add_bare_module(bare_heif)
 
