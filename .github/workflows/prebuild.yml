@@ -66,7 +66,11 @@ jobs:
       - run: |
           apt update
           apt install -y meson nasm
-        if: ${{ matrix.platform == 'linux' || matrix.platform == 'android' }}
+        if: ${{ matrix.platform == 'linux' }}
+      - run: |
+          sudo apt update
+          sudo apt install -y meson nasm
+        if: ${{ matrix.platform == 'android' }}
       - run: brew install meson nasm
         if: ${{ matrix.platform == 'darwin' || matrix.platform == 'ios' }}
       - run: |
