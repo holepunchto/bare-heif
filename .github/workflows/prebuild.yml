@@ -65,7 +65,7 @@ jobs:
           node-version: lts/*
       - run: |
           apt update
-          apt install -y meson nasm
+          apt install -y git clang lld meson nasm
         if: ${{ matrix.platform == 'linux' }}
       - run: |
           sudo apt update
