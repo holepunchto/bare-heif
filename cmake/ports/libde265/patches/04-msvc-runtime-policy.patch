@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6066e9f..ad5f483 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,9 @@
+ cmake_minimum_required (VERSION 3.3.2)
+ 
++if(POLICY CMP0091)
++  cmake_policy(SET CMP0091 NEW)
++endif()
++
+ project (libde265
+     LANGUAGES C CXX
+     VERSION 1.0.15
