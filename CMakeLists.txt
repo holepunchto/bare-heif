@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.25)
 find_package(cmake-bare REQUIRED PATHS node_modules/cmake-bare)
 find_package(cmake-ports REQUIRED PATHS node_modules/cmake-ports)
 
-project(bare_heif C)
+project(bare_heif C CXX)
 
 find_port(
   libheif
