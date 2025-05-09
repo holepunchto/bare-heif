@@ -31,7 +31,7 @@ jobs:
           node-version: lts/*
       - run: |
           apt update
-          apt install -y meson nasm clang
+          apt install -y meson nasm clang lld
         if: ${{ matrix.platform == 'linux' }}
       - run: brew install meson nasm
         if: ${{ matrix.platform == 'darwin' }}
