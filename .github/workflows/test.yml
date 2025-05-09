@@ -14,6 +14,7 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             arch: x64
+            container: debian
           - os: macos-latest
             platform: darwin
             arch: arm64
@@ -21,6 +22,7 @@ jobs:
             platform: win32
             arch: x64
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     name: ${{ matrix.platform }}-${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v4
