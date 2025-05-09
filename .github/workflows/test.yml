@@ -30,8 +30,8 @@ jobs:
         with:
           node-version: lts/*
       - run: |
-          sudo apt update
-          sudo apt install -y meson nasm
+          apt update
+          apt install -y meson nasm
         if: ${{ matrix.platform == 'linux' }}
       - run: brew install meson nasm
         if: ${{ matrix.platform == 'darwin' }}
