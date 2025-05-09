@@ -31,7 +31,7 @@ target_link_libraries(
 if(target MATCHES "linux" AND NOT TARGET c++)
   target_link_options(
     ${bare_heif}
-    PUBLIC
+    PRIVATE
       -static-libstdc++
   )
 endif()
