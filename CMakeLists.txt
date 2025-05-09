@@ -5,6 +5,8 @@ find_package(cmake-ports REQUIRED PATHS node_modules/cmake-ports)
 
 project(bare_heif C)
 
+bare_target(target)
+
 find_port(
   libheif
   FEATURES
@@ -25,3 +27,11 @@ target_link_libraries(
   PUBLIC
     heif
 )
+
+if(target MATCHES "linux" AND NOT TARGET c++)
+  target_link_options(
+    ${bare_heif}
+    PUBLIC
+      -static-libstdc++
+  )
+endif()
