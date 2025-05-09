@@ -5,9 +5,9 @@ include(CheckCXXSymbolExists)
 check_cxx_symbol_exists(_LIBCPP_VERSION cstdlib HAVE_LIBCPP)
 
 if(HAVE_LIBCPP)
-  set(libc++ c++)
+  set(libc++ "-lc++")
 else()
-  set(libc++ stdc++)
+  set(libc++ "-lstdc++")
 endif()
 
 add_library(heif STATIC IMPORTED GLOBAL)
