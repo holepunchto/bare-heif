@@ -33,10 +33,7 @@ jobs:
         if: ${{ matrix.platform == 'linux' }}
       - run: brew install meson nasm
         if: ${{ matrix.platform == 'darwin' }}
-      - run: |
-          choco install meson nasm
-          "C:\Program Files\NASM" | Out-File -FilePath "$env:GITHUB_PATH" -Append
-          "C:\Program Files\Meson" | Out-File -FilePath "$env:GITHUB_PATH" -Append
+      - run: choco install meson nasm
         if: ${{ matrix.platform == 'win32' }}
       - run: npm install -g bare-runtime bare-make
       - run: npm install
