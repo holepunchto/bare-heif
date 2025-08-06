@@ -61,11 +61,12 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
     return NULL;
   }
 
-  int width = heif_image_get_width(image, heif_channel_interleaved);
-  int height = heif_image_get_height(image, heif_channel_interleaved);
   int stride;
 
   const uint8_t *plane = heif_image_get_plane_readonly(image, heif_channel_interleaved, &stride);
+
+  int width = stride / 4;
+  int height = heif_image_get_height(image, heif_channel_interleaved);
 
   assert(plane);
 
