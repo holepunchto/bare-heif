@@ -58,13 +58,31 @@ jobs:
     name: Build / ${{ matrix.platform }}-${{ matrix.arch }}${{ matrix.tags }}
     steps:
       - uses: holepunchto/actions/bare-base@v1
-      - uses: holepunchto/actions/compile-prebuilds@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          platform: ${{ matrix.platform }}
-          arch: ${{ matrix.arch }}
-          flags: ${{ matrix.flags }}
-          tags: ${{ matrix.tags}}
-          upload: true
+          node-version: lts/*
+      - run: |
+          apt update
+          apt install -y git clang lld meson nasm
+        if: ${{ matrix.platform == 'linux' }}
+      - run: |
+          sudo apt update
+          sudo apt install -y meson nasm
+        if: ${{ matrix.platform == 'android' }}
+      - run: brew install meson nasm
+        if: ${{ matrix.platform == 'darwin' || matrix.platform == 'ios' }}
+      - run: choco install meson nasm
+        if: ${{ matrix.platform == 'win32' }}
+      - run: npm install -g bare-runtime bare-make
+      - run: npm install
+      - run: bare-make generate --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} ${{ matrix.flags }}
+      - run: bare-make build
+      - run: bare-make install
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-${{ matrix.arch }}${{ matrix.tags }}
+          path: prebuilds/*
   publish:
     runs-on: ubuntu-latest
     environment:
