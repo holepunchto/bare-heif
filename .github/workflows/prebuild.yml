@@ -62,7 +62,7 @@ jobs:
       - uses: holepunchto/actions/bare-base@v1
       - run: |
           apt update
-          apt install -y git clang lld meson nasm
+          apt install -y git clang lld pkg-config meson nasm
         if: ${{ matrix.platform == 'linux' }}
       - run: |
           sudo apt update
