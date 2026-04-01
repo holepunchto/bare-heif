@@ -1,4 +1,4 @@
-name: Test
+name: Integrate
 on:
   push:
     branches:
@@ -7,6 +7,12 @@ on:
     branches:
       - main
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint
+    steps:
+      - uses: holepunchto/actions/node-base@v1
+      - run: npm run lint
   test:
     strategy:
       matrix:
@@ -21,12 +27,9 @@ jobs:
             platform: win32
             arch: x64
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.platform }}-${{ matrix.arch }}
+    name: Test / ${{ matrix.platform }}-${{ matrix.arch }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
+      - uses: holepunchto/actions/bare-base@v1
       - run: |
           sudo apt update
           sudo apt install -y meson nasm
@@ -35,9 +38,9 @@ jobs:
         if: ${{ matrix.platform == 'darwin' }}
       - run: choco install meson nasm
         if: ${{ matrix.platform == 'win32' }}
-      - run: npm install -g bare-runtime bare-make
-      - run: npm install
-      - run: bare-make generate --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --debug
-      - run: bare-make build
-      - run: bare-make install
+      - uses: holepunchto/actions/compile-prebuilds@v1
+        with:
+          platform: ${{ matrix.platform }}
+          arch: ${{ matrix.arch }}
+          flags: --debug
       - run: npm test
