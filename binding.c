@@ -87,7 +87,8 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
   V(height);
 #undef V
 
-  len = stride * height;
+  // Widen before multiplying: int * int overflows for images past ~23k pixels per side.
+  len = (size_t) stride * (size_t) height;
 
   js_value_t *buffer;
   err = js_create_unsafe_arraybuffer(env, len, &data, &buffer);
