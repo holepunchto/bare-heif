@@ -12,34 +12,25 @@ permissions:
 jobs:
   # TEMPORARY: reproduces the `sfw npm install` failure seen in Prebuild and
   # Publish. Remove once the Windows runner question is settled.
-  # Mirrors the Prebuild/Publish build job exactly: same `container` key, same
-  # arch matrix, and `bare-base` rather than its inner actions, so the failing
-  # `sfw npm install` runs nested inside the composite like it does there.
+  # `sfw npm install` fails intermittently on windows-2022 while reporting a
+  # bogus "npm not found in PATH" — npm is on PATH, and the step burns ~11s
+  # before erroring, so this measures the failure rate per runner image.
+  # SFW_DEBUG is set at job level so it reaches the step nested in `bare-base`.
   debug-sfw:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: windows-2022
-            arch: x64
-          - os: windows-2022
-            arch: arm64
-          - os: windows-2025
-            arch: x64
-          - os: windows-2025
-            arch: arm64
+        os:
+          - windows-2022
+          - windows-2025
+        attempt: [1, 2, 3, 4, 5]
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
-    name: Debug sfw / ${{ matrix.os }}-${{ matrix.arch }}
+    name: Debug sfw / ${{ matrix.os }} #${{ matrix.attempt }}
+    env:
+      SFW_DEBUG: true
     steps:
       - uses: holepunchto/actions/bare-base@v1
-      - name: Locate npm
-        if: always()
-        shell: bash
-        run: |
-          echo "sfw:  $(command -v sfw || echo MISSING)"
-          echo "npm:  $(command -v npm || echo MISSING)"
-          where.exe npm || true
   lint:
     runs-on: ubuntu-latest
     name: Lint
