@@ -106,9 +106,22 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
   return result;
 }
 
+static void
+bare_heif__on_teardown(void *data) {
+  heif_deinit();
+}
+
 static js_value_t *
 bare_heif_exports(js_env_t *env, js_value_t *exports) {
   int err;
+
+  // Pairs with heif_deinit() below, which unregisters the default plugins and
+  // releases the decoder tables they allocate.
+  struct heif_error error = heif_init(NULL);
+  assert(error.code == heif_error_Ok);
+
+  err = js_add_teardown_callback(env, bare_heif__on_teardown, NULL);
+  assert(err == 0);
 
 #define V(name, fn) \
   { \
