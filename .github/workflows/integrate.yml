@@ -10,27 +10,33 @@ on:
 permissions:
   contents: read
 jobs:
-  # TEMPORARY: reproduces the `sfw npm install` failure seen in Prebuild and
-  # Publish. Remove once the Windows runner question is settled.
-  # `sfw npm install` fails intermittently on windows-2022 while reporting a
-  # bogus "npm not found in PATH" — npm is on PATH, and the step burns ~11s
-  # before erroring, so this measures the failure rate per runner image.
-  # SFW_DEBUG is set at job level so it reaches the step nested in `bare-base`.
-  debug-sfw:
+  # TEMPORARY: A/B test for holepunchto/actions#PENDING. `sfw npm install` fails
+  # intermittently on windows-2022 with a bogus "npm not found in PATH"; the
+  # patch passes `npm.cmd` to skip sfw's PowerShell resolution. Both jobs run
+  # 10 identical attempts so the ~20% baseline rate is measurable. Delete once
+  # the patch lands.
+  debug-sfw-control:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - windows-2022
-          - windows-2025
-        attempt: [1, 2, 3, 4, 5]
-    runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
-    name: Debug sfw / ${{ matrix.os }} #${{ matrix.attempt }}
+        attempt: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    runs-on: windows-2022
+    name: Control #${{ matrix.attempt }}
     env:
       SFW_DEBUG: true
     steps:
-      - uses: holepunchto/actions/bare-base@v1
+      - uses: holepunchto/actions/node-base@v1
+  debug-sfw-patched:
+    strategy:
+      fail-fast: false
+      matrix:
+        attempt: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    runs-on: windows-2022
+    name: Patched #${{ matrix.attempt }}
+    env:
+      SFW_DEBUG: true
+    steps:
+      - uses: tony-go/hp-actions/node-base@fix/windows-npm-cmd
   lint:
     runs-on: ubuntu-latest
     name: Lint
