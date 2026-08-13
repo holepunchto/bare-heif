@@ -28,7 +28,7 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
   error = heif_context_read_from_memory_without_copy(ctx, data, len, NULL);
 
   if (error.code != heif_error_Ok) {
-    err = js_throw_errorf(env, NULL, error.message);
+    err = js_throw_errorf(env, NULL, "%s", error.message);
     assert(err == 0);
 
     heif_context_free(ctx);
@@ -40,7 +40,7 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
   error = heif_context_get_primary_image_handle(ctx, &handle);
 
   if (error.code != heif_error_Ok) {
-    err = js_throw_errorf(env, NULL, error.message);
+    err = js_throw_errorf(env, NULL, "%s", error.message);
     assert(err == 0);
 
     heif_context_free(ctx);
@@ -52,7 +52,7 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
   error = heif_decode_image(handle, &image, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, NULL);
 
   if (error.code != heif_error_Ok) {
-    err = js_throw_errorf(env, NULL, error.message);
+    err = js_throw_errorf(env, NULL, "%s", error.message);
     assert(err == 0);
 
     heif_image_handle_release(handle);
