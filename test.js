@@ -1,6 +1,5 @@
 const test = require('brittle')
 const heif = require('.')
-const { corruptBox } = require('./test/helpers')
 
 const heic = require('./test/fixtures/grapefruit.heic', {
   with: { type: 'binary' }
@@ -78,3 +77,20 @@ test('rejects an image the decoder cannot read', (t) => {
 
   t.exception(() => heif.decode(image), /Decoder plugin generated an error/)
 })
+
+// Helpers
+
+// Overwrite bytes inside a named ISOBMFF box, keeping the surrounding boxes
+// intact. Used to reach the decoder's failure paths without having to ship a
+// separate broken fixture for each one.
+function corruptBox(image, box, { offset, length }) {
+  const buffer = Buffer.from(image)
+
+  const at = buffer.indexOf(Buffer.from(box, 'ascii'))
+
+  if (at === -1) throw new Error(`No '${box}' box in the fixture`)
+
+  buffer.fill(0xff, at + offset, at + offset + length)
+
+  return buffer
+}
