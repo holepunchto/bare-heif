@@ -72,11 +72,7 @@ jobs:
         if: ${{ matrix.platform == 'android' }}
       - run: brew install meson nasm
         if: ${{ matrix.platform == 'darwin' || matrix.platform == 'ios' }}
-      # meson 1.12 breaks the clang-cl sanity check on Windows: it passes
-      # c_link_args to the compiler probe without the leading /link.
-      - run: |
-          choco install meson --version 1.11.0 --allow-downgrade
-          choco install nasm
+      - run: choco install meson nasm
         if: ${{ matrix.platform == 'win32' }}
       - uses: holepunchto/actions/compile-prebuilds@v1
         with:
