@@ -1,6 +1,6 @@
 {
   "name": "bare-heif",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "HEIF support for Bare",
   "exports": {
     ".": "./index.js",
