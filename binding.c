@@ -196,8 +196,7 @@ bare_heif_get_metadata(js_env_t *env, js_callback_info_t *info) {
   }
 
   int count = heif_image_handle_get_number_of_metadata_blocks(handle, filter);
-  heif_item_id *ids = count > 0 ? malloc(sizeof(heif_item_id) * count) : NULL;
-  assert(count == 0 || ids);
+  heif_item_id ids[count > 0 ? count : 1];
 
   if (count > 0) {
     count = heif_image_handle_get_list_of_metadata_block_IDs(handle, filter, ids, count);
@@ -239,7 +238,6 @@ bare_heif_get_metadata(js_env_t *env, js_callback_info_t *info) {
       err = js_throw_errorf(env, NULL, "%s", error.message);
       assert(err == 0);
 
-      free(ids);
       heif_image_handle_release(handle);
       heif_context_free(ctx);
 
@@ -253,7 +251,6 @@ bare_heif_get_metadata(js_env_t *env, js_callback_info_t *info) {
     assert(err == 0);
   }
 
-  free(ids);
   heif_image_handle_release(handle);
   heif_context_free(ctx);
 
