@@ -1,5 +1,6 @@
 build/
 prebuilds/
+coverage/
 node_modules/
 sandbox/
 package-lock.json

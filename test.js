@@ -78,6 +78,59 @@ test('rejects an image the decoder cannot read', (t) => {
   t.exception(() => heif.decode(image), /Decoder plugin generated an error/)
 })
 
+test('get metadata from .heic', (t) => {
+  const metadata = heif.getMetadata(heic)
+
+  t.is(metadata.length, 1)
+  t.is(metadata[0].type, 'Exif')
+  t.ok(Buffer.isBuffer(metadata[0].data))
+})
+
+test('get metadata from .heic - EXIF', (t) => {
+  const metadata = heif.getMetadata(heic, 'Exif')
+
+  t.is(metadata.length, 1)
+  t.is(metadata[0].type, 'Exif')
+  t.ok(Buffer.isBuffer(metadata[0].data))
+})
+
+test('get metadata from .heic - XMP', (t) => {
+  const image = require('./test/fixtures/grapefruit-xmp.heic', {
+    with: { type: 'binary' }
+  })
+
+  const metadata = heif.getMetadata(image)
+  const [xmp] = heif.getMetadata(image, 'mime')
+
+  t.is(metadata.length, 2, 'Exif and XMP')
+  t.is(xmp.type, 'mime')
+  t.is(xmp.contentType, 'application/rdf+xml')
+  t.absent('uriType' in xmp)
+  t.ok(xmp.data.includes('<x:xmpmeta'))
+})
+
+test('get metadata from .heic - URI', (t) => {
+  const image = require('./test/fixtures/grapefruit-uri.heic', {
+    with: { type: 'binary' }
+  })
+
+  const [uri] = heif.getMetadata(image, 'uri ')
+
+  t.is(uri.type, 'uri ')
+  t.is(uri.uriType, 'https://example.com/bare-heif/test')
+  t.absent('contentType' in uri)
+  t.ok(uri.data.includes('bare-heif uri metadata fixture'))
+})
+
+test('metadata type filter must be a four-character string', (t) => {
+  t.exception.all(() => heif.getMetadata(heic, null), /type must be a string/)
+  t.exception.all(() => heif.getMetadata(heic, 'uri'), /four-character string/)
+})
+
+test('get metadata from a malformed image throws', (t) => {
+  t.exception(() => heif.getMetadata(heic.subarray(0, 100)), /Cannot read full meta box/)
+})
+
 // Helpers
 
 // Overwrite bytes inside a named ISOBMFF box, keeping the surrounding boxes
