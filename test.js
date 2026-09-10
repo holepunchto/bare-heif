@@ -84,6 +84,7 @@ test('get metadata from .heic', (t) => {
   t.is(metadata.length, 1)
   t.is(metadata[0].type, 'Exif')
   t.ok(Buffer.isBuffer(metadata[0].data))
+  t.alike(metadata[0].data.subarray(0, 4), Buffer.from('4d4d002a', 'hex'))
 })
 
 test('get metadata from .heic - EXIF', (t) => {
@@ -92,6 +93,15 @@ test('get metadata from .heic - EXIF', (t) => {
   t.is(metadata.length, 1)
   t.is(metadata[0].type, 'Exif')
   t.ok(Buffer.isBuffer(metadata[0].data))
+  t.alike(metadata[0].data.subarray(0, 4), Buffer.from('4d4d002a', 'hex'))
+})
+
+test('get metadata from .heic - Exif data too short for an offset', (t) => {
+  const image = require('./test/fixtures/grapefruit-exif-corrupt.heic', {
+    with: { type: 'binary' }
+  })
+
+  t.exception(() => heif.getMetadata(image, { type: 'Exif' }), /too short to contain an offset/)
 })
 
 test('get metadata from .heic - XMP', (t) => {
