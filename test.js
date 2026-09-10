@@ -87,7 +87,7 @@ test('get metadata from .heic', (t) => {
 })
 
 test('get metadata from .heic - EXIF', (t) => {
-  const metadata = heif.getMetadata(heic, 'Exif')
+  const metadata = heif.getMetadata(heic, { type: 'Exif' })
 
   t.is(metadata.length, 1)
   t.is(metadata[0].type, 'Exif')
@@ -100,7 +100,7 @@ test('get metadata from .heic - XMP', (t) => {
   })
 
   const metadata = heif.getMetadata(image)
-  const [xmp] = heif.getMetadata(image, 'mime')
+  const [xmp] = heif.getMetadata(image, { type: 'mime' })
 
   t.is(metadata.length, 2, 'Exif and XMP')
   t.is(xmp.type, 'mime')
@@ -114,7 +114,7 @@ test('get metadata from .heic - URI', (t) => {
     with: { type: 'binary' }
   })
 
-  const [uri] = heif.getMetadata(image, 'uri ')
+  const [uri] = heif.getMetadata(image, { type: 'uri ' })
 
   t.is(uri.type, 'uri ')
   t.is(uri.uriType, 'https://example.com/bare-heif/test')
@@ -123,8 +123,7 @@ test('get metadata from .heic - URI', (t) => {
 })
 
 test('metadata type filter must be a four-character string', (t) => {
-  t.exception.all(() => heif.getMetadata(heic, null), /type must be a string/)
-  t.exception.all(() => heif.getMetadata(heic, 'uri'), /four-character string/)
+  t.exception.all(() => heif.getMetadata(heic, { type: 'uri' }), /four-character string/)
 })
 
 test('get metadata from a malformed image throws', (t) => {

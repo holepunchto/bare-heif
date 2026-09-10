@@ -10,8 +10,8 @@ exports.decode = function decode(image) {
   }
 }
 
-exports.getMetadata = function getMetadata(image, type) {
-  const metadata = binding.getMetadata(image, type)
+exports.getMetadata = function getMetadata(image, opts = {}) {
+  const metadata = binding.getMetadata(image, opts.type)
 
   for (const block of metadata) {
     block.data = Buffer.from(block.data)
