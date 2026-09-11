@@ -32,11 +32,7 @@ heif.getMetadata(image)
 // ]
 
 // Filter metadata by its four-character HEIF item type
-const [exifMetadata] = heif.getMetadata(image, 'Exif')
-
-// Skip the metadata offset to get the raw EXIF data
-const offset = exifMetadata.data.readUInt32BE(0)
-const exif = exifMetadata.data.subarray(4 + offset)
+const [exifMetadata] = heif.getMetadata(image, { type: 'Exif' })
 ```
 
 ## License
