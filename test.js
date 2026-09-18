@@ -17,6 +17,7 @@ test('decode .heic, odd width', (t) => {
   const { width, height, data } = heif.decode(image)
 
   t.comment({ width, height })
+  t.is(width % 2, 1, 'the padded stride is not reported as the width')
   t.is(width * height * 4, data.byteLength)
 })
 

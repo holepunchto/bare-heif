@@ -7,6 +7,8 @@
 #include <string.h>
 #include <utf.h>
 
+#define BARE_HEIF_MAX_PIXELS (1ull << 28)
+
 static js_value_t *
 bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
   int err;
@@ -68,10 +70,30 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
 
   const uint8_t *plane = heif_image_get_plane_readonly(image, heif_channel_interleaved, &stride);
 
-  int width = stride / 4;
+  int width = heif_image_get_width(image, heif_channel_interleaved);
   int height = heif_image_get_height(image, heif_channel_interleaved);
 
-  assert(plane);
+  if (plane == NULL || width <= 0 || height <= 0 || stride < width * 4) {
+    err = js_throw_error(env, NULL, "Invalid HEIF image");
+    assert(err == 0);
+
+    heif_image_release(image);
+    heif_image_handle_release(handle);
+    heif_context_free(ctx);
+
+    return NULL;
+  }
+
+  if ((uint64_t) width * height > BARE_HEIF_MAX_PIXELS) {
+    err = js_throw_error(env, NULL, "HEIF dimensions exceed maximum");
+    assert(err == 0);
+
+    heif_image_release(image);
+    heif_image_handle_release(handle);
+    heif_context_free(ctx);
+
+    return NULL;
+  }
 
   js_value_t *result;
   err = js_create_object(env, &result);
@@ -91,13 +113,25 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
 #undef V
 
   // Widen before multiplying: int * int overflows for images past ~23k pixels per side.
-  len = (size_t) stride * (size_t) height;
+  len = (size_t) width * (size_t) height * 4;
 
   js_value_t *buffer;
-  err = js_create_unsafe_arraybuffer(env, len, &data, &buffer);
-  assert(err == 0);
 
-  memcpy(data, plane, len);
+  void *pixels;
+  err = js_create_unsafe_arraybuffer(env, len, &pixels, &buffer);
+
+  if (err < 0) {
+    heif_image_release(image);
+    heif_image_handle_release(handle);
+    heif_context_free(ctx);
+
+    return NULL;
+  }
+
+  // The plane is padded out to the stride, which the packed result leaves out.
+  for (int y = 0; y < height; y++) {
+    memcpy((uint8_t *) pixels + (size_t) y * width * 4, plane + (size_t) y * stride, (size_t) width * 4);
+  }
 
   err = js_set_named_property(env, result, "data", buffer);
   assert(err == 0);
@@ -196,9 +230,22 @@ bare_heif_get_metadata(js_env_t *env, js_callback_info_t *info) {
   }
 
   int count = heif_image_handle_get_number_of_metadata_blocks(handle, filter);
-  heif_item_id ids[count > 0 ? count : 1];
+
+  heif_item_id *ids = NULL;
 
   if (count > 0) {
+    ids = malloc((size_t) count * sizeof(heif_item_id));
+
+    if (ids == NULL) {
+      err = js_throw_error(env, NULL, "Out of memory");
+      assert(err == 0);
+
+      heif_image_handle_release(handle);
+      heif_context_free(ctx);
+
+      return NULL;
+    }
+
     count = heif_image_handle_get_list_of_metadata_block_IDs(handle, filter, ids, count);
   }
 
@@ -231,12 +278,22 @@ bare_heif_get_metadata(js_env_t *env, js_callback_info_t *info) {
     void *metadata;
     js_value_t *data;
     err = js_create_arraybuffer(env, metadata_len, &metadata, &data);
-    assert(err == 0);
+
+    if (err < 0) {
+      free(ids);
+
+      heif_image_handle_release(handle);
+      heif_context_free(ctx);
+
+      return NULL;
+    }
 
     error = heif_image_handle_get_metadata(handle, ids[i], metadata);
     if (error.code != heif_error_Ok) {
       err = js_throw_errorf(env, NULL, "%s", error.message);
       assert(err == 0);
+
+      free(ids);
 
       heif_image_handle_release(handle);
       heif_context_free(ctx);
@@ -250,6 +307,8 @@ bare_heif_get_metadata(js_env_t *env, js_callback_info_t *info) {
     err = js_set_element(env, result, i, block);
     assert(err == 0);
   }
+
+  free(ids);
 
   heif_image_handle_release(handle);
   heif_context_free(ctx);
