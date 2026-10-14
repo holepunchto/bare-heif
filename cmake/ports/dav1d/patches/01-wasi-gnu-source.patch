@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index 90555e4..06f5909 100644
+--- a/meson.build
++++ b/meson.build
+@@ -96,7 +96,7 @@ test_args = []
+ optional_arguments = []
+ optional_link_arguments = []
+ 
+-if host_machine.system() in ['linux', 'gnu', 'emscripten']
++if host_machine.system() in ['linux', 'gnu', 'emscripten', 'wasi']
+     test_args += '-D_GNU_SOURCE'
+     add_project_arguments('-D_GNU_SOURCE', language: 'c')
+ endif

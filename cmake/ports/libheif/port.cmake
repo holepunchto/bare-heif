@@ -10,6 +10,11 @@ else()
   set(libc++ "-lstdc++")
 endif()
 
+# libc++ doesn't include the ABI library and unwinder on WASI.
+if(CMAKE_SYSTEM_NAME STREQUAL "WASI")
+  list(APPEND libc++ "-lc++abi" "-lunwind")
+endif()
+
 add_library(heif STATIC IMPORTED GLOBAL)
 
 set(args
@@ -28,6 +33,10 @@ set(args
   -DWITH_JPEG_DECODER=OFF
   -DWITH_JPEG_ENCODER=OFF
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "WASI")
+  list(APPEND args -DENABLE_MULTITHREADING_SUPPORT=OFF)
+endif()
 
 set(depends)
 
@@ -75,6 +84,8 @@ declare_port(
   BYPRODUCTS lib/${lib}
   PATCHES
     patches/01-static-build.patch
+    patches/02-wasi-tmp-file.patch
+    patches/03-wasi-worker-threads.patch
   DEPENDS ${depends}
   ARGS ${args}
 )

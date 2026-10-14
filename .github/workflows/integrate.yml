@@ -32,6 +32,8 @@ jobs:
           - os: macos-latest
             platform: darwin
             arch: arm64
+            source: true
+            flags: --sanitize address
           - os: windows-latest
             platform: win32
             arch: x64
@@ -44,11 +46,11 @@ jobs:
           flags: --debug ${{ matrix.flags }}
       - run: |
           sudo apt update
-          sudo apt install -y meson nasm
+          sudo apt install -y meson
         if: ${{ matrix.platform == 'linux' }}
-      - run: brew install meson nasm
+      - run: brew install meson
         if: ${{ matrix.platform == 'darwin' }}
-      - run: choco install meson nasm
+      - run: choco install meson
         if: ${{ matrix.platform == 'win32' }}
       - uses: holepunchto/actions/compile-prebuilds@v1
         with:
@@ -56,5 +58,3 @@ jobs:
           arch: ${{ matrix.arch }}
           flags: --debug ${{ matrix.flags }}
       - run: npm test
-        env:
-          LSAN_OPTIONS: suppressions=test/leaks.txt

@@ -1,0 +1,24 @@
+diff --git a/libde265/motion.cc b/libde265/motion.cc
+index 77705db..9086f50 100644
+--- a/libde265/motion.cc
++++ b/libde265/motion.cc
+@@ -27,7 +27,6 @@
+ 
+ 
+ #include <sys/types.h>
+-#include <signal.h>
+ #include <string.h>
+ 
+ #if defined(_MSC_VER) || defined(__MINGW32__)
+diff --git a/libde265/slice.cc b/libde265/slice.cc
+index e65bdbc..d25f168 100644
+--- a/libde265/slice.cc
++++ b/libde265/slice.cc
+@@ -1648,7 +1648,6 @@ static int decode_transquant_bypass_flag(thread_context* tctx)
+ 
+ 
+ #include <sys/types.h>
+-#include <signal.h>
+ 
+ static int decode_split_cu_flag(thread_context* tctx,
+                                 int x0, int y0, int ctDepth)
