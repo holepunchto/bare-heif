@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <bare.h>
+#include <bare/module.h>
 #include <js.h>
 #include <libheif/heif.h>
 #include <stdbool.h>

@@ -1,0 +1,13 @@
+diff --git a/libheif/box.cc b/libheif/box.cc
+index 504e26e..cfd4801 100644
+--- a/libheif/box.cc
++++ b/libheif/box.cc
+@@ -1787,7 +1787,7 @@ void Box_iloc::set_use_tmp_file(bool flag)
+ {
+   m_use_tmpfile = flag;
+   if (flag) {
+-#if !defined(_WIN32)
++#if !defined(_WIN32) && !defined(__wasi__)
+     strcpy(m_tmp_filename, "/tmp/libheif-XXXXXX");
+     m_tmpfile_fd = mkstemp(m_tmp_filename);
+ #else

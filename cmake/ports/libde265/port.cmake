@@ -10,6 +10,11 @@ else()
   set(libc++ "-lstdc++")
 endif()
 
+# libc++ doesn't include the ABI library and unwinder on WASI.
+if(CMAKE_SYSTEM_NAME STREQUAL "WASI")
+  list(APPEND libc++ "-lc++abi" "-lunwind")
+endif()
+
 if(WIN32)
   set(lib libde265.lib)
 else()
@@ -23,6 +28,7 @@ declare_port(
   PATCHES
     patches/01-getopt-const-pointer.patch
     patches/02-clang-sse-flags.patch
+    patches/03-unused-signal-header.patch
   ARGS
     -DBUILD_SHARED_LIBS=OFF
     -DENABLE_SDL=OFF

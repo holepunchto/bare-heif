@@ -5,6 +5,8 @@ declare_port(
   dav1d
   MESON
   BYPRODUCTS lib/libdav1d.a
+  PATCHES
+    patches/01-wasi-gnu-source.patch
   ARGS
     -Denable_tests=false
     -Denable_tools=false
