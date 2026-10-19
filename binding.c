@@ -9,6 +9,15 @@
 
 #define BARE_HEIF_MAX_PIXELS (1ull << 28)
 
+static struct heif_context *
+bare_heif__context_alloc(void) {
+  struct heif_context *ctx = heif_context_alloc();
+
+  if (ctx) heif_context_get_security_limits(ctx)->max_image_size_pixels = BARE_HEIF_MAX_PIXELS;
+
+  return ctx;
+}
+
 static js_value_t *
 bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
   int err;
@@ -28,7 +37,7 @@ bare_heif_decode(js_env_t *env, js_callback_info_t *info) {
 
   struct heif_error error;
 
-  struct heif_context *ctx = heif_context_alloc();
+  struct heif_context *ctx = bare_heif__context_alloc();
 
   error = heif_context_read_from_memory_without_copy(ctx, data, len, NULL);
 
@@ -203,7 +212,7 @@ bare_heif_get_metadata(js_env_t *env, js_callback_info_t *info) {
     }
   }
 
-  struct heif_context *ctx = heif_context_alloc();
+  struct heif_context *ctx = bare_heif__context_alloc();
   assert(ctx);
 
   struct heif_error error = heif_context_read_from_memory_without_copy(ctx, input, input_len, NULL);
