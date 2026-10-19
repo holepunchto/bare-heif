@@ -79,6 +79,16 @@ test('rejects an image the decoder cannot read', (t) => {
   t.exception(() => heif.decode(image), /Decoder plugin generated an error/)
 })
 
+test('rejects an image larger than the pixel limit before decoding', (t) => {
+  // 20000 x 20000 is past the 2^28 pixel limit but within libheif's own default.
+  const image = Buffer.from(heic)
+  const ispe = image.indexOf('ispe') + 8
+  image.writeUInt32BE(20000, ispe)
+  image.writeUInt32BE(20000, ispe + 4)
+
+  t.exception(() => heif.decode(image), /Security limit exceeded/)
+})
+
 test('get metadata from .heic', (t) => {
   const metadata = heif.getMetadata(heic)
 
