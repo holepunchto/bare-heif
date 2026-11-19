@@ -13,11 +13,9 @@ jobs:
           - os: ubuntu-22.04
             platform: linux
             arch: x64
-            container: ubuntu:22.04
           - os: ubuntu-22.04-arm
             platform: linux
             arch: arm64
-            container: ubuntu:22.04
           - os: ubuntu-24.04
             platform: android
             arch: x64
@@ -63,22 +61,11 @@ jobs:
             platform: win32
             arch: arm64
     runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
     name: Build / ${{ matrix.platform }}-${{ matrix.arch }}${{ matrix.tags }}
     steps:
       - uses: holepunchto/actions/bare-base@v1
-      - run: |
-          apt update
-          apt install -y git clang lld pkg-config meson
-        if: ${{ matrix.platform == 'linux' }}
-      - run: |
-          sudo apt update
-          sudo apt install -y meson
-        if: ${{ matrix.platform == 'android' || matrix.platform == 'wasi' }}
-      - run: brew install meson
-        if: ${{ matrix.platform == 'darwin' || matrix.platform == 'ios' }}
-      - run: choco install meson
-        if: ${{ matrix.platform == 'win32' }}
+      - uses: holepunchto/actions/setup-python@v1
+      - uses: holepunchto/actions/setup-meson@v1
       - uses: holepunchto/actions/compile-prebuilds@v1
         with:
           platform: ${{ matrix.platform }}
