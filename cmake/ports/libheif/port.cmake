@@ -32,6 +32,12 @@ set(args
   -DWITH_AOM_DECODER=OFF
   -DWITH_JPEG_DECODER=OFF
   -DWITH_JPEG_ENCODER=OFF
+  # heifio, libheif's helper target, probes for these on its own regardless of
+  # the WITH_* switches above, so it links whatever the host happens to ship.
+  -DCMAKE_DISABLE_FIND_PACKAGE_TIFF=ON
+  -DCMAKE_DISABLE_FIND_PACKAGE_JPEG=ON
+  -DCMAKE_DISABLE_FIND_PACKAGE_PNG=ON
+  -DCMAKE_DISABLE_FIND_PACKAGE_WEBP=ON
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "WASI")
