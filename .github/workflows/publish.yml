@@ -66,6 +66,10 @@ jobs:
     container: ${{ matrix.container }}
     name: Build / ${{ matrix.platform }}-${{ matrix.arch }}${{ matrix.tags }}
     steps:
+      - run: |
+          apt update
+          apt install -y libatomic1
+        if: ${{ matrix.platform == 'linux' }}
       - uses: holepunchto/actions/bare-base@v1
       - run: |
           apt update
