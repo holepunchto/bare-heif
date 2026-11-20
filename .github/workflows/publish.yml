@@ -68,13 +68,9 @@ jobs:
     steps:
       - run: |
           apt update
-          apt install -y libatomic1
+          apt install -y libatomic1 git clang lld pkg-config meson
         if: ${{ matrix.platform == 'linux' }}
       - uses: holepunchto/actions/bare-base@v1
-      - run: |
-          apt update
-          apt install -y git clang lld pkg-config meson
-        if: ${{ matrix.platform == 'linux' }}
       - run: |
           sudo apt update
           sudo apt install -y meson
